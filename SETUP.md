@@ -85,7 +85,7 @@ services:
 Run the following command to start all the services in your `docker-compose.yml` file:
 
 ```sh
-docker-compose -f seaweedfs-compose.yml -p seaweedfs up
+docker compose -f seaweedfs-compose.yml -p seaweedfs up
 ```
 
 This command will download the necessary images and start the containers for **SeaweedFS**, **Prometheus**, **S3**, **WebDAV**, and **Master/Volume/Filer** services.
@@ -214,5 +214,5 @@ Prometheus will collect and display metrics about the SeaweedFS components (Mast
 To stop all services and containers:
 
 ```sh
-docker-compose -f seaweedfs-compose.yml -p seaweedfs down
+docker compose -f seaweedfs-compose.yml -p seaweedfs down
 ```
