@@ -12,7 +12,7 @@ Vue.component('file-node', {
         }
     },
     template: `
-      <li @contextmenu.prevent="$emit('rename', node)">
+      <li @contextmenu.prevent="$emit('contextmenu', $event, node)">
         <div class="file-item" @click="toggle">
           <i :class="['ion', node.type === 'folder' ? 'ion-folder' : 'ion-document', 'folder-icon']"></i>
           <span @click.stop="node.type === 'file' && selectFile(node.path)">{{ node.name }}</span>
@@ -184,12 +184,16 @@ const app = new Vue({
         },
         async deleteItem(node = null) {
             if (!node && !this.currentTab) return alert("Select a file or tab first");
-            const target = node ? node : this.currentTab;
-            if (!confirm(`Delete ${target.filename}?`)) return;
 
-            await fetch(`http://localhost:3307/files/${target.filename}`, {
+            const target = node || this.currentTab;
+            const targetPath = target.filename || target.path;
+
+            if (!confirm(`Delete ${targetPath}?`)) return;
+
+            await fetch(`http://localhost:3307/files/${targetPath}`, {
                 method: 'DELETE'
             });
+
             this.showContextMenu = false;
             await this.fetchFileList();
             this.openTabs = [];

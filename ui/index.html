@@ -40,7 +40,8 @@
             <div class="file-tree">
                 <ul>
                     <file-node v-for="(node, index) in tree" :key="index" :node="node" @select="loadFile"
-                        @rename="renameItem"></file-node>
+                        @rename="renameItem" @contextmenu="openContextMenu">
+                    </file-node>
                 </ul>
             </div>
         </div>
