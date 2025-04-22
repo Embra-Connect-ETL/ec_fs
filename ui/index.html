@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EC File System</title>
+
+    <!-- CodeMirror Core -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+
+    <!-- CodeMirror Modes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/meta.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/yaml/yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/shell/shell.min.js"></script>
+
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
+    <!-- Your styles -->
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="sidebar">
+            <h3>File Browser</h3>
+            <div class="file-tree">
+                <ul>
+                    <file-node v-for="(node, index) in tree" :key="index" :node="node" @select="loadFile"
+                        @rename="renameItem"></file-node>
+                </ul>
+            </div>
+        </div>
+
+        <div class="editor">
+            <div class="toolbar">
+                <button @click="createFile">New File</button>
+                <button @click="createFolder">New Folder</button>
+                <button @click="deleteItem">Delete</button>
+                <span>{{ currentTab ? currentTab.filename : 'No file selected' }}</span>
+                <button @click="saveFile" :disabled="!currentTab">Save</button>
+            </div>
+
+            <div class="tabs">
+                <div class="tab" v-for="(tab, index) in openTabs" :key="index"
+                    :class="{ active: tab.filename === currentTab?.filename }" @click="switchTab(tab)">
+                    {{ tab.filename.split('/').pop() }}
+                    <span class="close" @click.stop="closeTab(tab)">×</span>
+                </div>
+            </div>
+
+            <div id="editor-container"></div>
+        </div>
+
+        <div v-if="showContextMenu" class="context-menu"
+            :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }">
+            <div @click="renameItem(contextTarget)">Rename</div>
+            <div @click="deleteItem(contextTarget)">Delete</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/addon/mode/loadmode.js"></script>
+    <script>
+        CodeMirror.modeURL = 'https://cdn.jsdelivr.net/npm/codemirror@5.65.13/mode/%N/%N.js';
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>

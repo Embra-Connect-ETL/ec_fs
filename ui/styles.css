@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+}
+
+#app {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 300px;
+    background: #1e1e1e;
+    color: white;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.editor {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-tree ul {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.file-tree li {
+    cursor: pointer;
+    margin: 0.3rem 0;
+}
+
+.folder-icon,
+.file-icon {
+    margin-right: 5px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+}
+
+#editor-container {
+    flex-grow: 1;
+    border-top: 1px solid #ccc;
+}
+
+.toolbar {
+    padding: 0.5rem;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tabs {
+    background: #ddd;
+    display: flex;
+}
+
+.tab {
+    padding: 5px 10px;
+    border-right: 1px solid #aaa;
+    cursor: pointer;
+    position: relative;
+}
+
+.tab.active {
+    background: #fff;
+    font-weight: bold;
+}
+
+.tab .close {
+    margin-left: 8px;
+    color: red;
+    cursor: pointer;
+}
+
+.context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+}
+
+.context-menu div {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.context-menu div:hover {
+    background: #eee;
+}
