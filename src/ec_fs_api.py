@@ -66,15 +66,20 @@ class FileSaveRequest(BaseModel):
 
 
 # ----------------------
+# Helper
+# ----------------------
+def validate_path(path: str):
+    if path.startswith("/") or ".." in path:
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+
+# ----------------------
 # Routes
 # ----------------------
 
-
 @app.get("/")
 async def health_check():
-    return Response(
-        content="File System API is running...", media_type="application/json"
-    )
+    return Response(content="File System API is running...", media_type="application/json")
 
 
 @app.get("/files")
@@ -84,9 +89,10 @@ def list_files(request: Request):
     return [obj.object_name for obj in objects]
 
 
-@app.get("/files/{filename}")
+@app.get("/files/{filename:path}")
 @limiter.limit("50/minute")
 def get_file(filename: str, request: Request):
+    validate_path(filename)
     try:
         response = minio_client.get_object(bucket_name, filename)
         content = response.read()
@@ -110,8 +116,7 @@ def get_file(filename: str, request: Request):
 
     except S3Error as e:
         if e.code == "NoSuchKey":
-            raise HTTPException(
-                status_code=404, detail=f"File '{filename}' not found")
+            raise HTTPException(status_code=404, detail=f"File '{filename}' not found")
         else:
             raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
@@ -120,12 +125,9 @@ def get_file(filename: str, request: Request):
 
 @app.put("/files/{filename:path}")
 async def save_file(filename: str, payload: FileSaveRequest):
+    validate_path(filename)
     try:
-        # --------------------------------------------
-        # Ensure folders are implied from the path
-        # --------------------------------------------
         file_bytes = payload.content.encode("utf-8")
-
         minio_client.put_object(
             bucket_name,
             filename,
@@ -137,9 +139,10 @@ async def save_file(filename: str, payload: FileSaveRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.delete("/files/{filename}")
+@app.delete("/files/{filename:path}")
 @limiter.limit("10/minute")
 def delete_file(filename: str, request: Request):
+    validate_path(filename)
     try:
         minio_client.remove_object(bucket_name, filename)
         return {"status": "deleted"}
@@ -149,23 +152,22 @@ def delete_file(filename: str, request: Request):
 
 @app.post("/files/upload")
 async def upload_file(file: UploadFile = File(...)):
-    content = await file.read()
-    minio_client.put_object(bucket_name, file.filename,
-                            BytesIO(content), length=len(content))
-    return {"status": "uploaded", "filename": file.filename}
+    validate_path(file.filename)
+    try:
+        content = await file.read()
+        minio_client.put_object(bucket_name, file.filename, BytesIO(content), length=len(content))
+        return {"status": "uploaded", "filename": file.filename}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/folders/{folder_path:path}")
 def create_folder(folder_path: str, request: Request):
+    validate_path(folder_path)
     try:
         if not folder_path.endswith("/"):
             folder_path += "/"
-        # --------------------------------------------
-        # Create an empty object to simulate a folder
-        # --------------------------------------------
-        minio_client.put_object(
-            bucket_name, folder_path, BytesIO(b""), length=0
-        )
+        minio_client.put_object(bucket_name, folder_path, BytesIO(b""), length=0)
         return {"status": "folder created", "folder": folder_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -173,20 +175,20 @@ def create_folder(folder_path: str, request: Request):
 
 @app.put("/folders/rename")
 def rename_folder(old_path: str, new_path: str, request: Request):
+    validate_path(old_path)
+    validate_path(new_path)
     try:
         if not old_path.endswith("/"):
             old_path += "/"
         if not new_path.endswith("/"):
             new_path += "/"
 
-        objects = minio_client.list_objects(
-            bucket_name, prefix=old_path, recursive=True)
+        objects = minio_client.list_objects(bucket_name, prefix=old_path, recursive=True)
 
         for obj in objects:
             new_obj_name = obj.object_name.replace(old_path, new_path, 1)
             data = minio_client.get_object(bucket_name, obj.object_name).read()
-            minio_client.put_object(
-                bucket_name, new_obj_name, BytesIO(data), len(data))
+            minio_client.put_object(bucket_name, new_obj_name, BytesIO(data), len(data))
             minio_client.remove_object(bucket_name, obj.object_name)
 
         return {"status": "folder renamed", "from": old_path, "to": new_path}
@@ -196,12 +198,12 @@ def rename_folder(old_path: str, new_path: str, request: Request):
 
 @app.delete("/folders/{folder_path:path}")
 def delete_folder(folder_path: str, request: Request):
+    validate_path(folder_path)
     try:
         if not folder_path.endswith("/"):
             folder_path += "/"
 
-        objects = minio_client.list_objects(
-            bucket_name, prefix=folder_path, recursive=True)
+        objects = minio_client.list_objects(bucket_name, prefix=folder_path, recursive=True)
         deleted = []
         for obj in objects:
             minio_client.remove_object(bucket_name, obj.object_name)
