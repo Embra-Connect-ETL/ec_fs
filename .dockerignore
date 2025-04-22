@@ -1,0 +1,16 @@
+.dockerignore
+.env
+.env.template
+*.md
+mongo-init.js
+package.json
+package-lock.json
+.venv/
+.git/
+.gitignore
+docker-compose.yml
+tests/
+.idea/
+.vscode/
+logs/
+tmp/

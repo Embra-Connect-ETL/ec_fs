@@ -1,17 +1,97 @@
-version: "3.7"
-
 services:
+  # ec_scheduler:
+  #   container_name: ec_scheduler
+  #   image: embraconnect/ec_scheduler:latest
+  #   build: .
+  #   environment:
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+  #   depends_on:
+  #     - cache
+  #     - minio
+  #     - mongo-db
+  #     - spark
+  #   links:
+  #     - "cache"
+  #     - "minio"
+  #     - "mongo-db"
+  #     - "spark"
+  #   restart: always
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - ec_network
+
+  # cache:
+  #   image: redis
+  #   container_name: ec_broker
+  #   restart: always
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - ec_network
+  #   volumes:
+  #     - ${HOME}/redis_data:/data
+
   minio:
     image: quay.io/minio/minio:latest
-    container_name: minio1
+    container_name: ec_object_store
     environment:
-      - MINIO_ROOT_USER=ROOTUSER
-      - MINIO_ROOT_PASSWORD=CHANGEME123
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000" # MinIO API
       - "9001:9001" # MinIO Console
+    networks:
+      - ec_network
     volumes:
-      - ${HOME}/minio/data:/data
+      - ${HOME}/minio_data:/data
     user: "${UID}:${GID}" # Runs as the current user
     command: server /data --console-address ":9001"
     restart: unless-stopped
+
+  # mongo-db:
+  #   image: mongo:latest
+  #   container_name: ec_data_store
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   networks:
+  #     - ec_network
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  #     MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+  #   volumes:
+  #     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+  #     - ${HOME}/mongo_data:/data/db
+
+  # spark:
+  #   image: "apache/spark:3.5.3-scala2.12-java11-r-ubuntu"
+  #   container_name: ec_spark
+  #   restart: unless-stopped
+  #   command: >
+  #     /opt/spark/sbin/start-connect-server.sh
+  #     --packages "org.apache.spark:spark-connect_2.12:3.5.3,io.delta:delta-spark_2.12:3.0.0,org.apache.hadoop:hadoop-aws:3.3.4,software.amazon.awssdk:s3:2.20.25,software.amazon.awssdk:sts:2.20.25"
+  #     --conf "spark.driver.extraJavaOptions=-Divy.cache.dir=/tmp -Divy.home=/tmp"
+  #     --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension"
+  #     --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+  #   environment:
+  #     - SPARK_NO_DAEMONIZE=true
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+  #   ports:
+  #     - "4040:4040" # Spark UI
+  #     - "15002:15002" # Spark Connect Server port
+  #   networks:
+  #     - ec_network
+
+networks:
+  ec_network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

@@ -1,0 +1,10 @@
+aiofiles
+dotenv
+fastapi
+minio
+pandas
+pydantic
+python-multipart
+slowapi
+uvicorn
+xmltodict

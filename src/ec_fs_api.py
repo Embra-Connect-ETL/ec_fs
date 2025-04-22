@@ -121,7 +121,9 @@ def get_file(filename: str, request: Request):
 @app.put("/files/{filename:path}")
 async def save_file(filename: str, payload: FileSaveRequest):
     try:
+        # --------------------------------------------
         # Ensure folders are implied from the path
+        # --------------------------------------------
         file_bytes = payload.content.encode("utf-8")
 
         minio_client.put_object(

@@ -1,1 +1,7 @@
-prometheus/
+.venv
+venv/
+.env
+__pycache__
+
+logs/
+data/
