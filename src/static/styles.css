@@ -196,6 +196,7 @@ body {
     padding: 2px;
     color: #616161;
     font-weight: bold;
+    pointer-events: none;
 }
 
 #file-tree .header.selected {

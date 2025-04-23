@@ -10,12 +10,15 @@ from typing import List, Optional
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+
 from minio import Minio
 from dotenv import load_dotenv
+
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+
 from pydantic import BaseModel
 
 # ----------------------
@@ -116,7 +119,8 @@ def get_file(filename: str, request: Request):
 
     except S3Error as e:
         if e.code == "NoSuchKey":
-            raise HTTPException(status_code=404, detail=f"File '{filename}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"File '{filename}' not found")
         else:
             raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
@@ -155,7 +159,8 @@ async def upload_file(file: UploadFile = File(...)):
     validate_path(file.filename)
     try:
         content = await file.read()
-        minio_client.put_object(bucket_name, file.filename, BytesIO(content), length=len(content))
+        minio_client.put_object(
+            bucket_name, file.filename, BytesIO(content), length=len(content))
         return {"status": "uploaded", "filename": file.filename}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -167,7 +172,8 @@ def create_folder(folder_path: str, request: Request):
     try:
         if not folder_path.endswith("/"):
             folder_path += "/"
-        minio_client.put_object(bucket_name, folder_path, BytesIO(b""), length=0)
+        minio_client.put_object(
+            bucket_name, folder_path, BytesIO(b""), length=0)
         return {"status": "folder created", "folder": folder_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -183,12 +189,14 @@ def rename_folder(old_path: str, new_path: str, request: Request):
         if not new_path.endswith("/"):
             new_path += "/"
 
-        objects = minio_client.list_objects(bucket_name, prefix=old_path, recursive=True)
+        objects = minio_client.list_objects(
+            bucket_name, prefix=old_path, recursive=True)
 
         for obj in objects:
             new_obj_name = obj.object_name.replace(old_path, new_path, 1)
             data = minio_client.get_object(bucket_name, obj.object_name).read()
-            minio_client.put_object(bucket_name, new_obj_name, BytesIO(data), len(data))
+            minio_client.put_object(
+                bucket_name, new_obj_name, BytesIO(data), len(data))
             minio_client.remove_object(bucket_name, obj.object_name)
 
         return {"status": "folder renamed", "from": old_path, "to": new_path}
@@ -203,7 +211,8 @@ def delete_folder(folder_path: str, request: Request):
         if not folder_path.endswith("/"):
             folder_path += "/"
 
-        objects = minio_client.list_objects(bucket_name, prefix=folder_path, recursive=True)
+        objects = minio_client.list_objects(
+            bucket_name, prefix=folder_path, recursive=True)
         deleted = []
         for obj in objects:
             minio_client.remove_object(bucket_name, obj.object_name)
