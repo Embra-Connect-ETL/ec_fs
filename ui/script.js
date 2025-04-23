@@ -134,7 +134,7 @@ function renderTree(node, container, basePath = '') {
 
         // icon
         const icon = document.createElement('ion-icon');
-        icon.setAttribute('name', isFile ? 'document-outline' : 'folder-outline');
+        icon.setAttribute('name', isFile ? 'document' : 'folder');
         icon.classList.add('icon');
         header.append(icon);
 
@@ -220,17 +220,13 @@ document.getElementById('save').onclick = async () => {
 document.getElementById('delete').onclick = async () => {
     if (!currentPath) return showToast('Select an item to delete', '#ff6347');
     const isFolder = currentPath.endsWith('/');
-    const confirmed = await showConfirm(`Delete ${path}?`);
+    const confirmed = await showConfirm(`Delete ${currentPath}?`);
     if (!confirmed) return;
     if (isFolder) {
         const folderPath = encodeURIComponent(currentPath.replace(/\/$/, ''));
-        await fetch(`${EC_FS_ENDPOINT}/folders/${folderPath}`, {
-            method: 'DELETE'
-        });
+        await fetch(`${EC_FS_ENDPOINT}/folders/${folderPath}`, { method: 'DELETE' });
     } else {
-        await fetch(`${EC_FS_ENDPOINT}/files/${encodeURIComponent(currentPath)}`, {
-            method: 'DELETE'
-        });
+        await fetch(`${EC_FS_ENDPOINT}/files/${encodeURIComponent(currentPath)}`, { method: 'DELETE' });
     }
     showToast('Deleted', '#ff6347');
     editor.setValue('');
@@ -238,6 +234,7 @@ document.getElementById('delete').onclick = async () => {
     document.getElementById('current-path').textContent = '';
     loadTree();
 };
+
 
 document.getElementById('rename').onclick = async () => {
     if (!currentPath) return showToast('Select an item to rename', '#ff6347');

@@ -3,7 +3,17 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Connect IDE | Integrated Development Environment" />
+    <meta property="og:description" content="Embra Connect's Integrated Development Environment" />
+    <meta property="og:url" content="https://www.embraconnect.com" />
+    <meta property="og:image" content="https://www.embraconnect.com/assets/png/color_logo_no_bg.png" />
+    <link rel="manifest" href="./assets/icons/site.webmanifest">
+    <link rel="shortcut icon" href="./assets/icons/favicon.ico" type="image/x-icon">
+
     <title>Connect IDE | Embra Connect</title>
     <!-- Ionicons CDN -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
@@ -46,11 +56,24 @@
 
 <body>
     <div id="sidebar">
-        <div>
-            <button id="new-file">New File</button>
-            <button id="new-folder">New Folder</button>
-            <button id="refresh">Refresh</button>
+        <div class="logo-wrapper">
+            <img class="logo" src="./assets/logos/ec_connect_logo.png" alt="logo">
+            Connect IDE
         </div>
+        <div id="sidebar-actions">
+            <button id="new-file" title="Create a new file">
+                <ion-icon class="sidebar-action-icon" name="document"></ion-icon>
+            </button>
+
+            <button id="new-folder" title="Create a new folder">
+                <ion-icon class="sidebar-action-icon" name="folder"></ion-icon>
+            </button>
+
+            <button id="refresh" title="Update file tree">
+                <ion-icon class="sidebar-action-icon" name="refresh"></ion-icon>
+            </button>
+        </div>
+
         <div id="file-tree"></div>
     </div>
 

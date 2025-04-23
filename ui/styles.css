@@ -104,10 +104,32 @@ body {
 
 #sidebar {
     width: 20%;
-    background: #f4f4f4;
+    background: var(--white);
+    box-shadow: inset 0 1rem 4rem 0 rgba(255, 72, 0, 0.05);
     overflow-y: auto;
-    padding: 10px;
+    padding: 1rem;
     border-right: 1px solid #ddd;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e2e2;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: bolder;
+    color: #686868;
+    pointer-events: none;
+}
+
+.logo {
+    width: 18%;
+    background: var(--amber-level-4);
+    border-radius: 50%;
+    padding: 1rem 1rem;
+    box-shadow: inset var(--level-2);
 }
 
 #editor-container {
@@ -119,9 +141,9 @@ body {
 }
 
 #toolbar {
-    background: #eee;
+    background: transparent;
     padding: 8px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #e2e2e2;
 }
 
 #file-tree ul {
@@ -139,10 +161,21 @@ body {
     display: flex;
     align-items: center;
     padding: 2px;
+    color: #616161;
+    font-weight: bold;
 }
 
 #file-tree .header.selected {
-    background: #ddd;
+    background: var(--amber-level-4);
+    color: var(--white);
+    font-weight: bolder;
+    border-radius: 24px;
+    padding: .4rem .8rem;
+    transition: .2s all ease;
+}
+
+#file-tree .header ion-icon {
+    color: #808080;
 }
 
 #file-tree ion-icon.toggle {
@@ -154,6 +187,10 @@ body {
     margin-right: 8px;
 }
 
+#file-tree .header.selected ion-icon {
+    color: var(--white) !important;
+}
+
 #file-tree .folder>ul {
     display: none;
     padding-left: 1em;
@@ -163,8 +200,27 @@ body {
     display: block;
 }
 
-button {
-    margin-right: 6px;
+#sidebar-actions {
+    padding-bottom: .8rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+#sidebar-actions #new-file,
+#sidebar-actions #new-folder,
+#sidebar-actions #refresh {
+    background: none;
+    border: none;
+}
+
+.sidebar-action-icon {
+    font-size: 1.2rem;
+    color: #545454;
+    cursor: pointer;
 }
 
 /* CodeMirror overrides */
@@ -195,28 +251,59 @@ button {
 }
 
 #modal {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 376px;
+    box-shadow: var(--level-5);
 }
 
 #modal h3 {
     margin-top: 0;
+    font-weight: bolder;
+    font-size: 1.2rem;
 }
 
 #modal input {
     width: 100%;
-    padding: 8px;
-    margin: 10px 0;
+    padding: .4rem;
+    margin: 1rem 0;
     box-sizing: border-box;
+    border: none;
+    border-radius: 0px;
+    border-bottom: 1px solid #ababab;
+}
+
+#modal input:focus {
+    outline: none;
 }
 
 #modal-buttons {
-    text-align: right;
+    margin-top: .8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 #modal-buttons button {
-    margin-left: 8px;
+    border: none;
+    border-radius: 18px;
+    color: var(--black-level-0);
+    font-weight: bold;
+    padding: .4rem 1rem;
+    cursor: pointer;
+}
+
+@media (max-width: 1366px) {
+    .logo-wrapper {
+        font-size: 1.6rem;
+    }
+
+    .logo {
+        width: 24%;
+    }
+
+    #file-tree .header {
+        font-size: .9rem;
+    }
 }
