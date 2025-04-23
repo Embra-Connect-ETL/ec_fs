@@ -1,0 +1,1 @@
+const EC_FS_ENDPOINT = "http://localhost:3307";

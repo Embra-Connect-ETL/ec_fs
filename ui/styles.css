@@ -167,10 +167,18 @@ button {
     margin-right: 6px;
 }
 
-/* Ensure CodeMirror instance fills its container */
+/* CodeMirror overrides */
 .CodeMirror {
-    height: 100%;
-    width: 100%;
+    /* Ensure CodeMirror fills its container */
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.CodeMirror,
+.CodeMirror * {
+    /* Override editor font size */
+    font-size: 14px !important;
+    line-height: 1.6 !important;
 }
 
 /* Modal styles */
