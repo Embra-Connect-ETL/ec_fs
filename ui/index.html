@@ -61,6 +61,8 @@
             Connect IDE
         </div>
         <div id="sidebar-actions">
+            <h2>File Browser</h2>
+
             <button id="new-file" title="Create a new file">
                 <ion-icon class="sidebar-action-icon" name="document"></ion-icon>
             </button>
@@ -79,9 +81,17 @@
 
     <div id="editor-container">
         <div id="toolbar">
-            <button id="save">Save</button>
-            <button id="delete">Delete</button>
-            <button id="rename">Rename</button>
+            <button id="save" title="Save changes">
+                <ion-icon class="toolbar-icon" name="save"></ion-icon>
+            </button>
+
+            <button id="delete" title="Delete selected item">
+                <ion-icon class="toolbar-icon" name="trash-bin"></ion-icon>
+            </button>
+
+            <button id="rename" title="Rename selected item">
+                <ion-icon class="toolbar-icon" name="pencil"></ion-icon>
+            </button>
             <span id="current-path"></span>
         </div>
         <textarea id="editor"></textarea>
@@ -91,7 +101,7 @@
     <div id="modal-overlay">
         <div id="modal">
             <h3 id="modal-title"></h3>
-            <input id="modal-input" type="text" />
+            <input id="modal-input" type="text" spellcheck="false" />
             <div id="modal-buttons">
                 <button id="modal-cancel">Cancel</button>
                 <button id="modal-ok">OK</button>

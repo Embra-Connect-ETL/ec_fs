@@ -114,6 +114,7 @@ body {
 .logo-wrapper {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     border-bottom: 1px solid #e2e2e2;
     margin-bottom: 1rem;
@@ -142,8 +143,40 @@ body {
 
 #toolbar {
     background: transparent;
-    padding: 8px;
-    border-bottom: 1px solid #e2e2e2;
+    border-bottom: 3px solid var(--amber-level-2);
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#toolbar button {
+    border: none;
+    border-radius: 42px;
+    background: none;
+    color: #545454;
+    cursor: pointer;
+    transition: .2s all ease;
+}
+
+#toolbar button:hover {
+    opacity: .8;
+}
+
+#toolbar button ion-icon {
+    font-size: 1.2rem;
+}
+
+#toolbar #current-path {
+    color: var(--black-level-0);
+    font-weight: bolder;
+    opacity: .8;
+    pointer-events: none;
+}
+
+#toolbar #delete:hover {
+    opacity: 1;
+    color: #ff3939;
 }
 
 #file-tree ul {
@@ -168,6 +201,7 @@ body {
 #file-tree .header.selected {
     background: var(--amber-level-4);
     color: var(--white);
+    opacity: .8;
     font-weight: bolder;
     border-radius: 24px;
     padding: .4rem .8rem;
@@ -210,6 +244,12 @@ body {
     border-bottom: 1px solid #e2e2e2;
 }
 
+#sidebar-actions h2 {
+    font-weight: bolder;
+    font-size: 1.2rem;
+    color: #545454;
+}
+
 #sidebar-actions #new-file,
 #sidebar-actions #new-folder,
 #sidebar-actions #refresh {
@@ -218,9 +258,14 @@ body {
 }
 
 .sidebar-action-icon {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: #545454;
     cursor: pointer;
+}
+
+#sidebar-actions button:hover {
+    transition: .2s all ease;
+    opacity: .8;
 }
 
 /* CodeMirror overrides */
@@ -262,6 +307,7 @@ body {
     margin-top: 0;
     font-weight: bolder;
     font-size: 1.2rem;
+    color: #545454;
 }
 
 #modal input {
