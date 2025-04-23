@@ -4,80 +4,218 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EC File System</title>
+    <title>File System Editor</title>
+    <!-- Ionicons CDN -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <!-- CodeMirror 5 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <!-- Toastify -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-    <!-- CodeMirror Core -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-
-    <!-- CodeMirror Modes -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/meta.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/yaml/yaml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/markdown/markdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/sql/sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/shell/shell.min.js"></script>
-
-    <!-- Vue -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-
-    <!-- Your styles -->
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
-    <div id="app">
-        <div class="sidebar">
-            <h3>File Browser</h3>
-            <div class="file-tree">
-                <ul>
-                    <file-node v-for="(node, index) in tree" :key="index" :node="node" @select="loadFile"
-                        @rename="renameItem" @contextmenu="openContextMenu">
-                    </file-node>
-                </ul>
-            </div>
+    <div id="sidebar">
+        <div>
+            <button id="new-file">New File</button>
+            <button id="new-folder">New Folder</button>
+            <button id="refresh">Refresh</button>
         </div>
+        <div id="file-tree"></div>
+    </div>
 
-        <div class="editor">
-            <div class="toolbar">
-                <button @click="createFile">New File</button>
-                <button @click="createFolder">New Folder</button>
-                <button @click="deleteItem">Delete</button>
-                <span>{{ currentTab ? currentTab.filename : 'No file selected' }}</span>
-                <button @click="saveFile" :disabled="!currentTab">Save</button>
-            </div>
-
-            <div class="tabs">
-                <div class="tab" v-for="(tab, index) in openTabs" :key="index"
-                    :class="{ active: tab.filename === currentTab?.filename }" @click="switchTab(tab)">
-                    {{ tab.filename.split('/').pop() }}
-                    <span class="close" @click.stop="closeTab(tab)">×</span>
-                </div>
-            </div>
-
-            <div id="editor-container"></div>
+    <div id="editor-container">
+        <div id="toolbar">
+            <button id="save">Save</button>
+            <button id="delete">Delete</button>
+            <button id="rename">Rename</button>
+            <span id="current-path"></span>
         </div>
+        <textarea id="editor"></textarea>
+    </div>
 
-        <div v-if="showContextMenu" class="context-menu"
-            :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }">
-            <div @click="renameItem(contextTarget)">Rename</div>
-            <div @click="deleteItem(contextTarget)">Delete</div>
+    <!-- Modal -->
+    <div id="modal-overlay">
+        <div id="modal">
+            <h3 id="modal-title"></h3>
+            <input id="modal-input" type="text" />
+            <div id="modal-buttons">
+                <button id="modal-cancel">Cancel</button>
+                <button id="modal-ok">OK</button>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/addon/mode/loadmode.js"></script>
     <script>
-        CodeMirror.modeURL = 'https://cdn.jsdelivr.net/npm/codemirror@5.65.13/mode/%N/%N.js';
+        // Toast helper
+        function showToast(message, background = '#333') {
+            Toastify({ text: message, duration: 3000, close: false, gravity: 'top', position: 'right', style: { background, color: '#fff', borderRadius: '24px', fontWeight: '600', fontSize: '14px', letterSpacing: '1.4px', textTransform: 'capitalize', boxShadow: '0 1rem 1rem 0 rgba(0,0,0,0.05)' } }).showToast();
+        }
+        // Modal helpers
+        function showModal(title, defaultValue = '') {
+            return new Promise(resolve => {
+                const overlay = document.getElementById('modal-overlay');
+                const input = document.getElementById('modal-input');
+                document.getElementById('modal-title').textContent = title;
+                input.value = defaultValue;
+                overlay.style.display = 'flex';
+                input.focus();
+                function cleanup() {
+                    overlay.style.display = 'none';
+                    okBtn.removeEventListener('click', onOk);
+                    cancelBtn.removeEventListener('click', onCancel);
+                }
+                function onOk() { cleanup(); resolve(input.value); }
+                function onCancel() { cleanup(); resolve(null); }
+                const okBtn = document.getElementById('modal-ok');
+                const cancelBtn = document.getElementById('modal-cancel');
+                okBtn.addEventListener('click', onOk);
+                cancelBtn.addEventListener('click', onCancel);
+            });
+        }
+        function showConfirm(message) {
+            return showModal(message + ' (yes to confirm)')
+                .then(value => value && value.toLowerCase() === 'yes');
+        }
+
+        let currentPath = null, editor = null, selectedHeader = null;
+
+        function initEditor() {
+            editor = CodeMirror.fromTextArea(document.getElementById('editor'), { lineNumbers: true, mode: 'sql', theme: 'default' });
+            editor.setSize('100%', '100%');
+        }
+
+        async function loadTree() {
+            const list = await (await fetch('http://localhost:3307/files')).json();
+            const tree = buildTree(list);
+            const container = document.getElementById('file-tree'); container.innerHTML = '';
+            renderTree(tree, container);
+        }
+        function buildTree(paths) {
+            const root = {};
+            for (const p of paths) {
+                const parts = p.split('/').filter(Boolean);
+                let node = root;
+                parts.forEach((part, i) => {
+                    if (!node[part]) node[part] = { __children: {} };
+                    if (i === parts.length - 1 && !p.endsWith('/')) node[part].__file = true;
+                    node = node[part].__children;
+                });
+            }
+            return root;
+        }
+        function renderTree(node, container, basePath = '') {
+            const ul = document.createElement('ul');
+            Object.entries(node).forEach(([name, entry]) => {
+                const li = document.createElement('li'), isFile = !!entry.__file;
+                const path = basePath + name + (isFile ? '' : '/');
+                li.classList.add(isFile ? 'file' : 'folder');
+                const header = document.createElement('div'); header.classList.add('header');
+                // toggle
+                const toggle = document.createElement('ion-icon'); toggle.setAttribute('name', 'chevron-forward-circle-outline'); toggle.classList.add('toggle');
+                if (!isFile) toggle.addEventListener('click', e => { e.stopPropagation(); li.classList.toggle('expanded'); toggle.setAttribute('name', li.classList.contains('expanded') ? 'chevron-down-circle-outline' : 'chevron-forward-circle-outline'); });
+                else toggle.style.visibility = 'hidden'; header.append(toggle);
+                // icon
+                const icon = document.createElement('ion-icon'); icon.setAttribute('name', isFile ? 'document-outline' : 'folder-outline'); icon.classList.add('icon'); header.append(icon);
+                // text
+                header.append(document.createTextNode(name));
+                header.addEventListener('click', () => {
+                    if (selectedHeader) selectedHeader.classList.remove('selected');
+                    header.classList.add('selected'); selectedHeader = header;
+                    currentPath = path; document.getElementById('current-path').textContent = path;
+                    if (isFile) openEntry(path); else editor.setValue('');
+                }); li.append(header);
+                if (!isFile) renderTree(entry.__children, li, path);
+                ul.append(li);
+            }); container.appendChild(ul);
+        }
+        async function openEntry(path) {
+            const data = await (await fetch(`http://localhost:3307/files/${encodeURIComponent(path)}`)).json();
+            editor.setValue(data.content); setMode(path);
+        }
+        function setMode(path) {
+            const ext = path.split('.').pop().toLowerCase(); let mode = 'javascript';
+            switch (ext) { case 'py': mode = 'python'; break; case 'sql': mode = 'sql'; break; case 'md': mode = 'markdown'; break; case 'json': mode = { name: 'javascript', json: true }; break; case 'xml': mode = 'xml'; break; case 'html': mode = 'htmlmixed'; break; }
+            editor.setOption('mode', mode);
+        }
+        // toolbar
+        document.getElementById('save').onclick = async () => {
+            if (!currentPath || currentPath.endsWith('/')) return showToast('Select a file to save', '#e74c3c');
+            await fetch(`http://localhost:3307/files/${encodeURIComponent(currentPath)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: editor.getValue() }) });
+            showToast('Saved', '#27ae60'); loadTree();
+        };
+        document.getElementById('delete').onclick = async () => {
+            if (!currentPath) return showToast('Select an item to delete', '#e74c3c');
+            const isFolder = currentPath.endsWith('/');
+            const confirmed = await showConfirm(`Delete ${path}?`);
+            if (!confirmed) return;
+            if (isFolder) {
+                const folderPath = encodeURIComponent(currentPath.replace(/\/$/, ''));
+                await fetch(`http://localhost:3307/folders/${folderPath}`, { method: 'DELETE' });
+            } else {
+                await fetch(`http://localhost:3307/files/${encodeURIComponent(currentPath)}`, { method: 'DELETE' });
+            }
+            showToast('Deleted', '#c0392b'); editor.setValue(''); currentPath = null; document.getElementById('current-path').textContent = '';
+            loadTree();
+        };
+        document.getElementById('rename').onclick = async () => {
+            if (!currentPath) return showToast('Select an item to rename', '#e74c3c');
+            const isFolder = currentPath.endsWith('/');
+            // Extract base name
+            const parts = currentPath.replace(/\/$/, '').split('/');
+            const baseName = parts.pop();
+            const dir = parts.join('/');
+            // Prompt with base name
+            const newBase = await showModal('Enter new name:', baseName);
+            if (!newBase) return;
+            // Construct full new path
+            const newPath = dir ? `${dir}/${newBase}` : newBase;
+            const oldPathTrimmed = isFolder ? currentPath.replace(/\/$/, '') : currentPath;
+            if (isFolder) {
+                // Rename folder
+                await fetch(
+                    `http://localhost:3307/folders/rename?old_path=${encodeURIComponent(oldPathTrimmed)}&new_path=${encodeURIComponent(newPath)}`,
+                    { method: 'PUT' }
+                );
+            } else {
+                // Rename file
+                const content = editor.getValue();
+                await fetch(
+                    `http://localhost:3307/files/${encodeURIComponent(newPath)}`,
+                    { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) }
+                );
+                await fetch(
+                    `http://localhost:3307/files/${encodeURIComponent(oldPathTrimmed)}`,
+                    { method: 'DELETE' }
+                );
+            }
+            showToast('Renamed', '#f39c12');
+            currentPath = isFolder ? `${newPath}/` : newPath;
+            document.getElementById('current-path').textContent = currentPath;
+            loadTree();
+        };
+        document.getElementById('new-file').onclick = async () => {
+            const path = await showModal('Path for new file:'); if (!path) return;
+            currentPath = path; editor.setValue(''); document.getElementById('current-path').textContent = path;
+        };
+        document.getElementById('new-folder').onclick = async () => {
+            const path = await showModal('Path for new folder (no slash):'); if (!path) return;
+            await fetch(`http://localhost:3307/folders/${encodeURIComponent(path)}`, { method: 'POST' }); showToast('Folder created', '#2980b9'); loadTree();
+        };
+        document.getElementById('refresh').onclick = loadTree;
+        window.onload = () => { initEditor(); loadTree(); };
     </script>
-    <script src="app.js"></script>
 </body>
 
 </html>
