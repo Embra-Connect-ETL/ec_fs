@@ -18,8 +18,8 @@
     "build:docker:ec_fs_api": "docker build --pull --rm -f api.Dockerfile -t embraconnect/ec_fs_api:latest .",
     "build:docker:ec_fs_ui": "docker build --pull --rm -f ui.Dockerfile -t embraconnect/ec_fs_ui:latest .",
 
-    "run:ec_fs_api": "docker run --rm --env-file ./.env -p 8000:8000 embraconnect/ec_fs_api:latest",
-    "run:ec_fs_ui": "docker run --rm --env-file ./.env -p 8000:8000 embraconnect/ec_fs_ui:latest",
+    "run:ec_fs_api": "docker run --rm --env-file ./.env -p 3307:3307 embraconnect/ec_fs_api:latest",
+    "run:ec_fs_ui": "docker run --rm --env-file ./.env -p 3309:3309 embraconnect/ec_fs_ui:latest",
 
     "push:docker:ec_fs": "docker push embraconnect/ec_fs:latest"
   },
