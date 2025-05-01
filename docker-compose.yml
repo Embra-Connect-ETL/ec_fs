@@ -50,7 +50,7 @@ services:
       - "spark"
     restart: always
     ports:
-      - "3307:3307"
+      - "3309:3309"
     networks:
       - ec_network
 
