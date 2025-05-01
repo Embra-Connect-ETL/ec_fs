@@ -28,39 +28,43 @@ services:
     networks:
       - ec_network
 
-  ec_fs_ui:
-    container_name: ec_fs_ui
-    image: embraconnect/ec_fs_ui:latest
-    build:
-      dockerfile: ui.dockerfile
-      context: .
-    depends_on:
-      - cache
-      - ec_fs_api
-      - ec_scheduler
-      - minio
-      - mongo-db
-      - spark
-    links:
-      - "cache"
-      - "ec_fs_api"
-      - "ec_scheduler"
-      - "minio"
-      - "mongo-db"
-      - "spark"
-    restart: always
-    ports:
-      - "3309:3309"
-    networks:
-      - ec_network
+  # ec_fs_ui:
+  #   container_name: ec_fs_ui
+  #   image: embraconnect/ec_fs_ui:latest
+  #   build:
+  #     dockerfile: ui.dockerfile
+  #     context: .
+  #   depends_on:
+  #     - cache
+  #     - ec_fs_api
+  #     - ec_scheduler
+  #     - minio
+  #     - mongo-db
+  #     - spark
+  #   links:
+  #     - "cache"
+  #     - "ec_fs_api"
+  #     - "ec_scheduler"
+  #     - "minio"
+  #     - "mongo-db"
+  #     - "spark"
+  #   restart: always
+  #   ports:
+  #     - "3309:3309"
+  #   networks:
+  #     - ec_network
 
   ec_scheduler:
     container_name: ec_scheduler
     image: embraconnect/ec_scheduler:latest
     build: .
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET=${AWS_BUCKET}
+      - BASE_PATH=${BASE_PATH}
+      - WAREHOUSE_DIR=${WAREHOUSE_DIR}
     depends_on:
       - cache
       - minio
