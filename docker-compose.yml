@@ -1,4 +1,59 @@
 services:
+  ec_fs_api:
+    container_name: ec_fs_api
+    image: embraconnect/ec_fs_api:latest
+    build:
+      dockerfile: api.dockerfile
+      context: .
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+    depends_on:
+      - cache
+      - ec_scheduler
+      - minio
+      - mongo-db
+      - spark
+    links:
+      - "cache"
+      - "ec_scheduler"
+      - "minio"
+      - "mongo-db"
+      - "spark"
+    restart: always
+    ports:
+      - "3307:3307"
+    networks:
+      - ec_network
+
+  ec_fs_ui:
+    container_name: ec_fs_ui
+    image: embraconnect/ec_fs_ui:latest
+    build:
+      dockerfile: ui.dockerfile
+      context: .
+    depends_on:
+      - cache
+      - ec_fs_api
+      - ec_scheduler
+      - minio
+      - mongo-db
+      - spark
+    links:
+      - "cache"
+      - "ec_fs_api"
+      - "ec_scheduler"
+      - "minio"
+      - "mongo-db"
+      - "spark"
+    restart: always
+    ports:
+      - "3307:3307"
+    networks:
+      - ec_network
+
   ec_scheduler:
     container_name: ec_scheduler
     image: embraconnect/ec_scheduler:latest
@@ -9,12 +64,12 @@ services:
     depends_on:
       - cache
       - minio
-      # - mongo-db
+      - mongo-db
       - spark
     links:
       - "cache"
       - "minio"
-      # - "mongo-db"
+      - "mongo-db"
       - "spark"
     restart: always
     ports:
