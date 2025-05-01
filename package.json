@@ -21,7 +21,8 @@
     "run:ec_fs_api": "docker run --rm --env-file ./.env -p 3307:3307 embraconnect/ec_fs_api:latest",
     "run:ec_fs_ui": "docker run --rm --env-file ./.env -p 3309:3309 embraconnect/ec_fs_ui:latest",
 
-    "push:docker:ec_fs": "docker push embraconnect/ec_fs:latest"
+    "push:docker:ec_fs_api": "docker push embraconnect/ec_fs_api:latest",
+    "push:docker:ec_fs_ui": "docker push embraconnect/ec_fs_ui:latest"
   },
   "repository": {
     "type": "git",
