@@ -135,7 +135,7 @@ function showAllJobsModal() {
                 const li = document.createElement('li');
                 li.style = 'padding: 0.5rem 0; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center;';
                 li.innerHTML = `
-                    <span style="cursor: pointer;" onclick="showJobDetailModal(${JSON.stringify(job).replace(/"/g, '&quot;')})">
+                    <span class="job-history-entry" onclick="showJobDetailModal(${JSON.stringify(job).replace(/"/g, '&quot;')})">
                         <strong>${job.job_id}</strong> - ${job.status || 'pending'} - ${job.timestamp}
                     </span>
                 `;
@@ -280,6 +280,7 @@ function updateJobHistoryUI() {
                 li.style.cursor = 'pointer';
                 li.onclick = () => showJobDetailModal(job);
                 list.appendChild(li);
+                li.classList.add("job-history-entry");
             });
         }
     });

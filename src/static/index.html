@@ -100,20 +100,20 @@
     <!-- Execution panel -->
     <div id="execution-panel">
         <div id="execution-header" onclick="toggleExecutionPanel()">
-            <span>Command Execution Panel</span>
+            <span class="execution-panel-title">Command Execution Panel</span>
             <ion-icon id="execution-toggle-icon" name="chevron-down-outline"></ion-icon>
         </div>
 
         <div id="execution-body">
-            <button onclick="submitSQLToJobAPI()">Run SQL</button>
-            <button id="view-jobs-btn">View All Jobs</button>
+            <div class="btn-wrapper">
+                <button onclick="submitSQLToJobAPI()">Run SQL</button>
+                <button id="view-jobs-btn">View All Jobs</button>
+                <button id="clear-history-btn" onclick="clearJobHistory()">Clear History</button>
+            </div>
 
-            <div id="execution-status" style="margin-top: 1rem;"></div>
-            <h4>Recent Jobs</h4>
-            <ul id="job-history" style="max-height: 150px; overflow-y: auto; padding-left: 1rem;"></ul>
-            <button onclick="clearJobHistory()"
-                style="margin-top: 0.5rem; background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 0.4rem 0.8rem;">Clear
-                History</button>
+            <div id="execution-status"></div>
+            <h4 class="recent-jobs-title">Recent Jobs</h4>
+            <ul id="job-history"></ul>
         </div>
     </div>
 
