@@ -146,6 +146,8 @@ function renderTree(node, container, basePath = '') {
             header.classList.add('selected');
             selectedHeader = header;
             currentPath = path;
+            console.log("Clicked ", currentPath);
+            
             document.getElementById('current-path').textContent = path;
 
             if (isFile) openEntry(path);
@@ -160,6 +162,8 @@ function renderTree(node, container, basePath = '') {
 }
 
 async function openEntry(path) {
+    console.log("Opening ", path);
+    
     const data = await (await fetch(`${EC_FS_ENDPOINT}/files/${encodeURIComponent(path)}`)).json();
     editor.setValue(data.content);
     setMode(path);
