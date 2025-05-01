@@ -341,6 +341,95 @@ body {
     cursor: pointer;
 }
 
+#execution-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #f7f7f7;
+    border-top: 1px solid #ccc;
+    transition: height 0.3s ease;
+    font-family: sans-serif;
+}
+
+#execution-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+#execution-body {
+    padding: 1rem;
+    display: none;
+    height: 0;
+    overflow: hidden;
+}
+
+#execution-body.open {
+    display: block;
+    height: auto;
+}
+
+#execution-body button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+#execution-status {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 1rem;
+    max-height: 80vh;
+    width: 500px;
+    overflow-y: auto;
+    position: relative;
+    border-radius: 8px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.scrollable {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
 @media (max-width: 1366px) {
     .logo-wrapper {
         font-size: 1.6rem;
