@@ -216,12 +216,17 @@ function showAllJobsModal() {
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center; 
-                    cursor: pointer;`
-                    ;
+                    cursor: pointer;
+                `;
 
                 li.innerHTML = `
-                    <span class="job-history-entry" onclick="showJobDetailModal(${JSON.stringify(job).replace(/"/g, '&quot;')})">
-                        <strong>${job.job_id}</strong> - ${job.status || 'pending'} - ${job.timestamp}
+                    <span 
+                        class="job-history-entry" 
+                        onclick="showJobDetailModal(${JSON.stringify(job).replace(/"/g, '&quot;')})">
+                        <strong>
+                            ${job.job_id}
+                        </strong> 
+                        - ${job.status || 'pending'} - ${job.timestamp}
                     </span>
                 `;
                 list.appendChild(li);
@@ -278,7 +283,7 @@ async function submitSQLToJobAPI() {
         };
         saveJob(job);
         pollJobStatus(job.job_id);
-        showToast(`Job with ID: ${data.job_id} has been submitted`, '#32cd32');
+        showToast(`Job with ID: ${data.job_id} has been submitted`);
     } catch (err) {
         showToast(`Error: ${err.message}`, '#ff6347');
     }
