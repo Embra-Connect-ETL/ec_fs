@@ -487,6 +487,48 @@ body {
     font-size: 2rem;
 }
 
+
+/* =============================================== */
+/* Job detail modal styling */
+/* =============================================== */
+.job-detail-modal-content {
+    background: white;
+    padding: 1.6rem;
+    max-height: 86vh;
+    width: 576px;
+    overflow-y: auto;
+    position: relative;
+    border-radius: 10px;
+}
+
+.job-detail-modal-content .job-detail-modal-close-btn {
+    font-weight: bolder;
+    font-size: 2.4rem;
+    color: tomato;
+    cursor: pointer;
+}
+
+.job-detail-modal-content h3 {
+    font-weight: bolder;
+    font-size: 1.4rem;
+    color: var(--dark-gray);
+    text-decoration: underline;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.job-detail-modal-content p {
+    font-weight: bold;
+    color: var(--black-level-3);
+}
+
+.job-detail-modal-content ion-icon {
+    font-size: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: tomato;
+}
+
 .scrollable {
     max-height: 80vh;
     overflow-y: auto;

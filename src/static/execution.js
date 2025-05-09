@@ -35,6 +35,7 @@ function initDB() {
             }
         };
     } catch (error) {
+        showToast("Something went wrong");
         console.error(`Something went wrong when attempting to initialize Indexed DB => ${error}`);
     }
 }
@@ -42,38 +43,71 @@ function initDB() {
 
 
 // =================================================================
-// The following method initializes Index DB
+// The following method writes jobs to Index DB
 // =================================================================
 function saveJob(job) {
-    const tx = db.transaction([DB_STORE], 'readwrite');
-    const store = tx.objectStore(DB_STORE);
-    store.put(job);
-    tx.oncomplete = () => updateJobHistoryUI();
+    try {
+        const tx = db.transaction([DB_STORE], 'readwrite');
+        const store = tx.objectStore(DB_STORE);
+        store.put(job);
+        tx.oncomplete = () => updateJobHistoryUI();
+    } catch (error) {
+        showToast("Could not save job details")
+        console.error(`Something went wrong when attempting to write to Indexed DB => ${error}`);
+    }
 }
 
+
+
+// =================================================================
+// The following method removes jobs from Index DB
+// =================================================================
 function deleteJob(jobId) {
-    const tx = db.transaction([DB_STORE], 'readwrite');
-    const store = tx.objectStore(DB_STORE);
-    store.delete(jobId);
-    tx.oncomplete = () => updateJobHistoryUI();
+    try {
+        const tx = db.transaction([DB_STORE], 'readwrite');
+        const store = tx.objectStore(DB_STORE);
+        store.delete(jobId);
+        tx.oncomplete = () => updateJobHistoryUI();
+    } catch (error) {
+        showToast("Could not delete job")
+        console.error(`Something went wrong when attempting to remove entry from Indexed DB => ${error}`);
+    }
 }
 
+
+
+// =================================================================
+// The following method retrieves all jobs from Index DB
+// =================================================================
 function getAllJobs(callback) {
-    const tx = db.transaction([DB_STORE], 'readonly');
-    const store = tx.objectStore(DB_STORE);
-    const jobs = [];
+    try {
+        const tx = db.transaction([DB_STORE], 'readonly');
+        const store = tx.objectStore(DB_STORE);
+        const jobs = [];
 
-    store.openCursor(null, 'prev').onsuccess = function (e) {
-        const cursor = e.target.result;
-        if (cursor && jobs.length < 5) {
-            jobs.push(cursor.value);
-            cursor.continue();
-        } else {
-            callback(jobs);
-        }
-    };
+        store.openCursor(null, 'prev').onsuccess = function (e) {
+            const cursor = e.target.result;
+            if (cursor && jobs.length < 10) {
+                jobs.push(cursor.value);
+                cursor.continue();
+            } else {
+                callback(jobs);
+            }
+        };
+    } catch (error) {
+        console.err
+    }
 }
 
+
+
+// =================================================================
+// The following method updates the entries under the [Recent Jobs]
+// section:
+// 
+// <h4 class="recent-jobs-title">Recent Jobs</h4>
+// <ul id="job-history">......</ul>
+// =================================================================
 function updateJobHistoryUI() {
     getAllJobs(jobs => {
         const list = document.getElementById('job-history');
@@ -82,17 +116,26 @@ function updateJobHistoryUI() {
             const li = document.createElement('li');
             li.textContent = `Job ID: ${job.job_id} - ${job.status || 'pending'} - ${job.timestamp}`;
             li.style.cursor = 'pointer';
+
+            // ==================================================================
+            // Clicking an entry displays a modal containing the job details
+            // ==================================================================
             li.onclick = () => showJobDetailModal(job);
             list.appendChild(li);
         });
     });
 }
 
+
+
+// ========================================================================
+// This method displays a modal containing details for the specified job
+// ========================================================================
 function showJobDetailModal(job) {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.innerHTML = `
-        <div id="job-detail-modal" class="job-detail-modal">
+        <div id="job-detail-modal-content" class="job-detail-modal-content">
             <span class="job-detail-modal-close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
             <h3>Job Details</h3>
             <p><strong>Job ID:</strong> ${job.job_id}</p>
@@ -105,14 +148,19 @@ function showJobDetailModal(job) {
 
 document.getElementById('view-jobs-btn').addEventListener('click', showAllJobsModal);
 
+
+
+// ========================================================================
+// This method displays a modal that lists all executed jobs
+// ========================================================================
 function showAllJobsModal() {
     const container = document.createElement('div');
-    container.className = 'modal';
+    container.className = 'all-jobs-modal';
     container.style = `
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.6);
+        background-color: rgba(0, 0, 0, 0.6);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -120,15 +168,15 @@ function showAllJobsModal() {
     `;
 
     const content = document.createElement('div');
-    content.className = 'modal-content';
+    content.className = 'all-jobs-modal-content';
     content.style = `
         background: white;
-        padding: 1rem;
+        padding: 1.6rem;
         width: 90%;
         max-width: 600px;
         max-height: 80vh;
         overflow-y: auto;
-        border-radius: 6px;
+        border-radius: 10px;
         position: relative;
     `;
 
@@ -138,16 +186,21 @@ function showAllJobsModal() {
         position: absolute;
         top: 0.5rem;
         right: 1rem;
-        font-size: 1.5rem;
+        font-size: 2.4rem;
+        font-weight: bolder;
+        color: rgb(244, 96, 70);
         cursor: pointer;
     `;
     closeBtn.onclick = () => container.remove();
 
     const title = document.createElement('h3');
     title.textContent = 'All Jobs';
+    title.style.fontSize = "1.6rem";
+    title.style.fontWeight = "bolder";
+    title.style.textDecoration = "underline";
 
     const list = document.createElement('ul');
-    list.style = 'list-style: none; padding-left: 0;';
+    list.style = 'list-style: none; padding: 1rem;';
 
     getAllJobs(jobs => {
         if (jobs.length === 0) {
@@ -157,7 +210,15 @@ function showAllJobsModal() {
         } else {
             jobs.forEach(job => {
                 const li = document.createElement('li');
-                li.style = 'padding: 0.5rem 0; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center;';
+                li.style = `
+                    padding: 0.5rem 0; 
+                    border-bottom: 1px solid rgb(227, 227, 227); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center; 
+                    cursor: pointer;`
+                    ;
+
                 li.innerHTML = `
                     <span class="job-history-entry" onclick="showJobDetailModal(${JSON.stringify(job).replace(/"/g, '&quot;')})">
                         <strong>${job.job_id}</strong> - ${job.status || 'pending'} - ${job.timestamp}
@@ -312,12 +373,23 @@ function updateJobHistoryUI() {
 
 
 
-function showToast(msg, color = '#333') {
-    const toast = document.createElement('div');
-    toast.textContent = msg;
-    toast.style = `position: fixed; bottom: 1rem; left: 1rem; background: ${color}; color: white; padding: 0.5rem 1rem; border-radius: 4px;`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+function showToast(msg, color = '#fd5321') {
+    Toastify({
+        text: msg,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        style: {
+            background: color,
+            color: "#ffffff",
+            borderRadius: "24px",
+            fontWeight: "800",
+            fontSize: "14px",
+            letterSpacing: "1.4px",
+            textTransform: "capitalize",
+            boxShadow: "0 1rem 1rem 0 rgba(0, 0, 0, .05)"
+        }
+    }).showToast();
 }
 
 function showConfirm(msg) {
