@@ -1,25 +1,49 @@
-const EC_JOB_ENDPOINT = 'http://localhost:8000/jobs/submit/';
-const EC_JOB_STATUS_ENDPOINT = 'http://localhost:8000/jobs/';
+const BASE_URL = 'http://localhost:8000'
+const EC_JOB_ENDPOINT = `${BASE_URL}/jobs/submit/`;
+const EC_JOB_STATUS_ENDPOINT = `${BASE_URL}/jobs/`;
 const activeFile = document.getElementById("current-path");
 
-// IndexedDB setup
+
+
+// =================================================================
+// IndexedDB Configuration
+// =================================================================
 let db;
-const DB_NAME = 'ec-jobs-db';
+const DB_NAME = 'ec-job-tracker';
 const DB_STORE = 'jobs';
 const DB_VERSION = 1;
 
+
+
+// =================================================================
+// The following method initializes Index DB
+// =================================================================
 function initDB() {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => console.error('IndexedDB failed');
-    request.onsuccess = (e) => db = e.target.result;
-    request.onupgradeneeded = (e) => {
-        db = e.target.result;
-        if (!db.objectStoreNames.contains(DB_STORE)) {
-            db.createObjectStore(DB_STORE, { keyPath: 'job_id' });
-        }
-    };
+
+    try {
+        request.onerror = () => console.error('IndexedDB failed');
+        request.onsuccess = (e) => db = e.target.result;
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+
+            // ==========================================================
+            // Check if the db contains the "jobs" table i.e. DB_STORE
+            // ==========================================================
+            if (!db.objectStoreNames.contains(DB_STORE)) {
+                db.createObjectStore(DB_STORE, { keyPath: 'job_id' });
+            }
+        };
+    } catch (error) {
+        console.error(`Something went wrong when attempting to initialize Indexed DB => ${error}`);
+    }
 }
 
+
+
+// =================================================================
+// The following method initializes Index DB
+// =================================================================
 function saveJob(job) {
     const tx = db.transaction([DB_STORE], 'readwrite');
     const store = tx.objectStore(DB_STORE);
@@ -68,8 +92,8 @@ function showJobDetailModal(job) {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.innerHTML = `
-        <div class="modal-content">
-            <span class="close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
+        <div id="job-detail-modal" class="job-detail-modal">
+            <span class="job-detail-modal-close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
             <h3>Job Details</h3>
             <p><strong>Job ID:</strong> ${job.job_id}</p>
             <p><strong>Status:</strong> ${job.status}</p>
