@@ -92,11 +92,12 @@ body {
     box-shadow: inset var(--level-2);
 }
 
-
+/* =============================== */
 /* Toolbar styling */
+/* =============================== */
 #toolbar {
     background: transparent;
-    border-bottom: 3px solid var(--amber-level-2);
+    border-bottom: 3px solid #ff944d;
     padding: .6rem 1rem;
     display: flex;
     align-items: center;

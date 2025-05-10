@@ -510,7 +510,7 @@ function showConfirm(msg) {
             border: none;
             border-radius: 18px;
             background: red;
-            color: var(--black-level-0);
+            color: white;
             font-weight: bold;
             padding: .4rem 1.2rem;
             cursor: pointer;
