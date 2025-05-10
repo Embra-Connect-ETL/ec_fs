@@ -26,10 +26,10 @@ function showToast(message, background = '#ffa07a') {
 --------------*/
 function showModal(title, defaultValue = '') {
     return new Promise(resolve => {
-        const overlay = document.getElementById('modal-overlay');
-        const input = document.getElementById('modal-input');
+        const overlay = document.getElementById('file-and-folder-creation-modal-overlay');
+        const input = document.getElementById('file-and-folder-creation-modal-input');
 
-        document.getElementById('modal-title').textContent = title;
+        document.getElementById('file-and-folder-creation-modal-title').textContent = title;
         input.value = defaultValue;
         overlay.style.display = 'flex';
         input.focus();

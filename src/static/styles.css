@@ -257,9 +257,10 @@ body {
 
 
 
-
-/* Modal styles */
-#modal-overlay {
+/* ============================================ */
+/* File and Folder creation modal styling */
+/* ============================================ */
+#file-and-folder-creation-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -271,7 +272,7 @@ body {
     justify-content: center;
 }
 
-#modal {
+#file-and-folder-creation-modal {
     background: var(--white);
     padding: 2rem;
     border-radius: 12px;
@@ -279,14 +280,14 @@ body {
     box-shadow: var(--level-5);
 }
 
-#modal h3 {
+#file-and-folder-creation-modal h3 {
     margin-top: 0;
     font-weight: bolder;
     font-size: 1.2rem;
     color: #545454;
 }
 
-#modal input {
+#file-and-folder-creation-modal input {
     width: 100%;
     padding: .4rem;
     margin: 1rem 0;
@@ -296,18 +297,18 @@ body {
     border-bottom: 1px solid #ababab;
 }
 
-#modal input:focus {
+#file-and-folder-creation-modal input:focus {
     outline: none;
 }
 
-#modal-buttons {
+#file-and-folder-creation-modal-buttons {
     margin-top: .8rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-#modal-buttons button {
+#file-and-folder-creation-modal-buttons button {
     border: none;
     border-radius: 18px;
     color: var(--black-level-0);
@@ -316,6 +317,11 @@ body {
     cursor: pointer;
 }
 
+
+
+/* ============================================== */
+/* Execution Panel styling */
+/* ============================================== */
 #execution-panel {
     position: fixed;
     bottom: 0;
@@ -419,7 +425,12 @@ body {
     color: #545454;
 }
 
-.modal {
+
+
+/* =============================================== */
+/* Job detail modal styling */
+/* =============================================== */
+.job-detail-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -432,40 +443,6 @@ body {
     z-index: 9999;
 }
 
-.modal-content {
-    background: white;
-    padding: 2rem;
-    max-height: 86vh;
-    width: 576px;
-    overflow-y: auto;
-    position: relative;
-    border-radius: 10px;
-}
-
-.modal-content h3 {
-    font-weight: bolder;
-    font-size: 1.4rem;
-}
-
-.close-modal {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    background: none;
-    border: none;
-    font-weight: bolder;
-    font-size: 3.8rem;
-    cursor: pointer;
-}
-
-.modal-content .close-modal {
-    font-size: 2rem;
-}
-
-
-/* =============================================== */
-/* Job detail modal styling */
-/* =============================================== */
 .job-detail-modal-content {
     background: white;
     padding: 1.6rem;
@@ -515,6 +492,13 @@ body {
 
 
 
+
+
+/* ============================================= */
+/* Media Queries */
+/* ============================================= */
+
+/* Medim sized screens */
 @media (max-width: 1366px) {
     .logo-wrapper {
         font-size: 1.6rem;
