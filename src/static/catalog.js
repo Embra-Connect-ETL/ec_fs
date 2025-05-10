@@ -21,8 +21,6 @@ function loadTables() {
                 `;
                 li.onclick = () => {
                     setActive(li);
-                    console.log(li);
-
                     loadTablePreview(table);
                 };
                 tableList.appendChild(li);
