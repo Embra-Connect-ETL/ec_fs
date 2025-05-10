@@ -58,7 +58,7 @@ function showModal(title, defaultValue = '') {
     });
 }
 
-function showConfirm(message) {
+async function showConfirm(message) {
     return showModal(message + ' (yes to confirm)')
         .then(value => value && value.toLowerCase() === 'yes');
 }
