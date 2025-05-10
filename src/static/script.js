@@ -314,6 +314,9 @@ document.getElementById('new-folder').onclick = async () => {
 };
 
 document.getElementById('refresh').onclick = loadTree;
+document.getElementById('navigate-to-catalog-browser').addEventListener('click', () => {
+    window.location.href = "./catalog_browser.html";
+});
 
 window.onload = () => {
     initEditor();

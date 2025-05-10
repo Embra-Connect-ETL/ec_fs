@@ -198,7 +198,7 @@ body {
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 1rem;
     border-bottom: 1px solid #e2e2e2;
 }
@@ -207,11 +207,14 @@ body {
     font-weight: bolder;
     font-size: 1.2rem;
     color: #545454;
+    display: flex;
+    align-items: flex-start;
 }
 
-#sidebar-actions #new-file,
-#sidebar-actions #new-folder,
-#sidebar-actions #refresh {
+#sidebar-actions #action-buttons #new-file,
+#sidebar-actions #action-buttons #new-folder,
+#sidebar-actions #action-buttons #refresh,
+#sidebar-actions #action-buttons #navigate-to-catalog-browser {
     background: none;
     border: none;
 }
@@ -220,6 +223,7 @@ body {
     font-size: 1.4rem;
     color: #545454;
     cursor: pointer;
+    margin-right: .6rem;
 }
 
 #sidebar-actions button:hover {
