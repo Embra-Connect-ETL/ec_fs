@@ -340,8 +340,8 @@ function pollJobStatus(jobId) {
 
 
 // =======================================================
-//  Expand and collapse the Command Execution Panel
-//  =======================================================
+// Expand and collapse the Command Execution Panel
+// =======================================================
 function toggleExecutionPanel() {
     const panelBody = document.getElementById('execution-body');
     const toggleIcon = document.getElementById('execution-toggle-icon');

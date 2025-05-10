@@ -1,6 +1,6 @@
-/*-------------
- Toast helper
--------------*/
+// =====================================================
+// Displays a toaster message
+// =====================================================
 function showToast(message, background = '#ffa07a') {
     Toastify({
         text: message,
@@ -21,9 +21,9 @@ function showToast(message, background = '#ffa07a') {
     }).showToast();
 }
 
-/*--------------
- Modal helpers
---------------*/
+// =====================================================
+// Displays a custom modal
+// =====================================================
 function showModal(title, defaultValue = '') {
     return new Promise(resolve => {
         const overlay = document.getElementById('file-and-folder-creation-modal-overlay');
@@ -68,9 +68,10 @@ let currentPath = null,
     selectedHeader = null;
 
 
-/*----------------------------
- Initialize Codemirror Editor
-----------------------------*/
+
+// =====================================================
+// Initialize Codemirror Editor
+// =====================================================
 function initEditor() {
     editor = CodeMirror.fromTextArea(
         document.getElementById('editor'), {
@@ -82,6 +83,10 @@ function initEditor() {
     editor.setSize('100%', '100%');
 }
 
+
+// =====================================================
+// The following method loads the File Tree
+// =====================================================
 async function loadTree() {
     const list = await (await fetch(`${EC_FS_ENDPOINT}/files`)).json();
     const tree = buildTree(list);
@@ -90,6 +95,10 @@ async function loadTree() {
     renderTree(tree, container);
 }
 
+
+// =====================================================
+// The following method builds the File Tree components
+// =====================================================
 function buildTree(paths) {
     const root = {};
 
@@ -108,6 +117,10 @@ function buildTree(paths) {
     return root;
 }
 
+
+// ========================================================
+// The following method renders the file tree components
+// ========================================================
 function renderTree(node, container, basePath = '') {
     const ul = document.createElement('ul');
 
