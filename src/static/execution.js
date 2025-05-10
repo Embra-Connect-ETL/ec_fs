@@ -95,7 +95,7 @@ function getAllJobs(callback) {
             }
         };
     } catch (error) {
-        console.err
+        console.error(`Could not retrieve jobs from IndexedDB -> ${error}`);
     }
 }
 
@@ -133,7 +133,7 @@ function updateJobHistoryUI() {
 // ========================================================================
 function showJobDetailModal(job) {
     const modal = document.createElement('div');
-    modal.className = 'modal';
+    modal.className = 'job-detail-modal';
     modal.innerHTML = `
         <div id="job-detail-modal-content" class="job-detail-modal-content">
             <span class="job-detail-modal-close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
@@ -155,7 +155,7 @@ document.getElementById('view-jobs-btn').addEventListener('click', showAllJobsMo
 // ========================================================================
 function showAllJobsModal() {
     const container = document.createElement('div');
-    container.className = 'all-jobs-modal';
+    container.className = 'all-jobs-modal-overlay';
     container.style = `
         position: fixed;
         top: 0; left: 0;
@@ -261,11 +261,7 @@ async function deleteJobFromAPI(jobId, icon) {
 }
 
 
-// =================================================
-// Submit an SQL job
-// =================================================
 async function submitSQLToJobAPI() {
-
     // =====================================
     // Validate script content & extension
     // =====================================
@@ -278,6 +274,9 @@ async function submitSQLToJobAPI() {
 
     const confirm = await showConfirm(`Submit job from "${activeFile.innerText}"?`);
     if (!confirm) return;
+
+    console.log(activeFileContent);
+    
 
     try {
         const res = await fetch(EC_JOB_ENDPOINT, {
@@ -306,6 +305,7 @@ async function submitSQLToJobAPI() {
         showToast(`Something unexpected -> ${err.message}`, '#ff6347');
     }
 }
+
 
 
 // ========================================================
@@ -429,10 +429,12 @@ function updateJobHistoryUI() {
     });
 }
 
+
+
 // =====================================================
 // Displays a toaster message
 // =====================================================
-function showToast(msg, color = '#fd5321') {
+function showToast(msg, color = '#ffa07a') {
     Toastify({
         text: msg,
         duration: 3000,
@@ -451,11 +453,84 @@ function showToast(msg, color = '#fd5321') {
     }).showToast();
 }
 
+
+// =====================================================
+// Displays a custom confirmation modal
+// =====================================================
 function showConfirm(msg) {
-    const confirmationModal = document.getElementById("modal")
-    return new Promise(resolve => {
-        const confirm = window.confirm(msg);
-        resolve(confirm);
+    return new Promise((resolve) => {
+        const container = document.createElement('div');
+        container.className = 'confirmation-modal-overlay';
+        container.style = `
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        `;
+
+        const content = document.createElement('div');
+        content.className = 'confirmation-modal-content';
+        content.style = `
+            background: white;
+            padding: 1.6rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            position: relative;
+        `;
+
+        const title = document.createElement('h3');
+        title.textContent = msg;
+        title.style.fontSize = "1rem";
+        title.style.fontWeight = "bold";
+        title.style.marginTop = "2rem";
+        title.style.marginBottom = "2rem";
+
+        const okBtn = document.createElement('button');
+        okBtn.innerHTML = "Ok";
+        okBtn.style = `
+            border: none;
+            border-radius: 18px;
+            color: var(--black-level-0);
+            font-weight: bold;
+            padding: .4rem 1.2rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        `;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = "Cancel";
+        closeBtn.style = `
+            border: none;
+            border-radius: 18px;
+            background: red;
+            color: var(--black-level-0);
+            font-weight: bold;
+            padding: .4rem 1.2rem;
+            cursor: pointer;
+        `;
+
+        content.appendChild(title);
+        content.appendChild(okBtn);
+        content.appendChild(closeBtn);
+        container.appendChild(content);
+        document.body.appendChild(container);
+
+        okBtn.onclick = () => {
+            document.body.removeChild(container);
+            resolve(true);
+        };
+
+        closeBtn.onclick = () => {
+            document.body.removeChild(container);
+            resolve(false);
+        };
     });
 }
 
