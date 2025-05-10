@@ -208,6 +208,7 @@ function showAllJobsModal() {
             const none = document.createElement('p');
             none.textContent = 'No jobs found.';
             none.style.fontWeight = "bold";
+            none.style.color = "rgb(53, 53, 53)";
             content.appendChild(none);
         } else {
             jobs.forEach(job => {
@@ -264,12 +265,17 @@ async function deleteJobFromAPI(jobId, icon) {
 // Submit an SQL job
 // =================================================
 async function submitSQLToJobAPI() {
+
     // =====================================
     // Validate script content & extension
     // =====================================
-    if (!activeFile.innerText || !activeFile.innerText.endsWith('.sql')) return showToast('Only SQL files can be submitted', '#ff6347');
+    if (!activeFile.innerText || !activeFile.innerText.endsWith('.sql'))
+        return showToast('Only SQL jobs can be submitted', '#ff6347');
+
     const activeFileContent = editor.getValue().trim();
-    if (!activeFileContent) return showToast('File is empty', '#ff6347');
+    if (!activeFileContent)
+        return showToast('File is empty', '#ff6347');
+
     const confirm = await showConfirm(`Submit job from "${activeFile.innerText}"?`);
     if (!confirm) return;
 
@@ -446,6 +452,7 @@ function showToast(msg, color = '#fd5321') {
 }
 
 function showConfirm(msg) {
+    const confirmationModal = document.getElementById("modal")
     return new Promise(resolve => {
         const confirm = window.confirm(msg);
         resolve(confirm);
