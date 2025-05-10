@@ -198,6 +198,7 @@ function showAllJobsModal() {
     title.style.fontSize = "1.6rem";
     title.style.fontWeight = "bolder";
     title.style.textDecoration = "underline";
+    title.style.marginTop = "1rem"
 
     const list = document.createElement('ul');
     list.style = 'list-style: none; padding: 1rem;';
@@ -206,6 +207,7 @@ function showAllJobsModal() {
         if (jobs.length === 0) {
             const none = document.createElement('p');
             none.textContent = 'No jobs found.';
+            none.style.fontWeight = "bold";
             content.appendChild(none);
         } else {
             jobs.forEach(job => {
@@ -242,19 +244,29 @@ function showAllJobsModal() {
 }
 
 
+// ============================================
+// Delete job queue
+// ============================================
 async function deleteJobFromAPI(jobId, icon) {
     try {
         icon.style.opacity = '0.5';
         await fetch(`${EC_JOB_STATUS_ENDPOINT}delete_queue`, { method: 'DELETE' });
         deleteJob(jobId);
         document.querySelector('.modal')?.remove();
-        showToast(`Deleted job ${jobId}`, '#999');
+        showToast(`Deleted job ${jobId}`);
     } catch (err) {
-        showToast(`Error deleting job`, '#ff6347');
+        showToast(`Failed to delete job`, '#ff6347');
     }
 }
 
+
+// =================================================
+// Submit an SQL job
+// =================================================
 async function submitSQLToJobAPI() {
+    // =====================================
+    // Validate script content & extension
+    // =====================================
     if (!activeFile.innerText || !activeFile.innerText.endsWith('.sql')) return showToast('Only SQL files can be submitted', '#ff6347');
     const activeFileContent = editor.getValue().trim();
     if (!activeFileContent) return showToast('File is empty', '#ff6347');
@@ -285,15 +297,20 @@ async function submitSQLToJobAPI() {
         pollJobStatus(job.job_id);
         showToast(`Job with ID: ${data.job_id} has been submitted`);
     } catch (err) {
-        showToast(`Error: ${err.message}`, '#ff6347');
+        showToast(`Something unexpected -> ${err.message}`, '#ff6347');
     }
 }
 
+
+// ========================================================
+// The following method periodically checks the job status
+// ========================================================
 function pollJobStatus(jobId) {
     const interval = setInterval(async () => {
         try {
             const res = await fetch(`${EC_JOB_STATUS_ENDPOINT}${jobId}/status`);
             if (!res.ok) throw new Error('Failed to get job status');
+
             const status = await res.json();
             if (status && status.status && ['completed', 'failed'].includes(status.status)) {
                 clearInterval(interval);
@@ -312,9 +329,13 @@ function pollJobStatus(jobId) {
         } catch (err) {
             console.error(`Polling error for job ${jobId}:`, err);
         }
-    }, 3000);
+    }, 5000);
 }
 
+
+// =======================================================
+//  Expand and collapse the Command Execution Panel
+//  =======================================================
 function toggleExecutionPanel() {
     const panelBody = document.getElementById('execution-body');
     const toggleIcon = document.getElementById('execution-toggle-icon');
@@ -322,39 +343,61 @@ function toggleExecutionPanel() {
     toggleIcon.setAttribute('name', panelBody.classList.contains('open') ? 'chevron-up-outline' : 'chevron-down-outline');
 }
 
+
+// ===================================================================
+// The following methods clears the job history by flushing all jobs
+// ===================================================================
 async function clearJobHistory() {
     try {
+        // ==========================================
         // Show confirmation modal before clearing
+        // ==========================================
         const confirm = await showConfirm('Are you sure you want to clear the job history?');
         if (!confirm) return;
 
+        // ==========================================
         // First, clear IndexedDB
+        // ==========================================
         await clearAllJobs();
 
+        // ===============================================
         // Then, call the backend to flush the job queue
-        const res = await fetch('http://localhost:8000/jobs/flush', {
+        // =================================================
+        const res = await fetch(`${BASE_URL}/jobs/flush`, {
             method: 'DELETE',
         });
 
         if (!res.ok) throw new Error('Failed to clear job history from backend');
 
+        // ==================================================
         // Update UI to reflect that job history is cleared
-        showToast('Job history has been cleared!', '#32cd32');
+        // ==================================================
+        showToast('Job history has been cleared!');
         updateJobHistoryUI();
     } catch (err) {
-        showToast(`Error: ${err.message}`, '#ff6347');
+        showToast(`Failed to clear job history -> ${err.message}`, '#ff6347');
     }
 }
 
 
-
+// ==================================================
+// Remode all jobs that were logged in indexedDB
+// ==================================================
 async function clearAllJobs() {
-    const tx = db.transaction([DB_STORE], 'readwrite');
-    const store = tx.objectStore(DB_STORE);
-    await store.clear();
-    tx.oncomplete = () => updateJobHistoryUI();
+    try {
+        const tx = db.transaction([DB_STORE], 'readwrite');
+        const store = tx.objectStore(DB_STORE);
+        await store.clear();
+        tx.oncomplete = () => updateJobHistoryUI();
+    } catch (error) {
+        console.error(`Could not clear indexedDB contents -> ${error}`);
+    }
 }
 
+
+// ==================================================
+// Remode all jobs that were logged in indexedDB
+// ==================================================
 function updateJobHistoryUI() {
     getAllJobs(jobs => {
         const list = document.getElementById('job-history');
@@ -362,6 +405,10 @@ function updateJobHistoryUI() {
         if (jobs.length === 0) {
             const none = document.createElement('p');
             none.textContent = 'No job history';
+            none.style.textAlign = "left";
+            none.style.fontWeight = "normal";
+            none.style.color = "#282828";
+            none.style.marginLeft = "-2rem"
             list.appendChild(none);
         } else {
             jobs.forEach(job => {
@@ -376,8 +423,9 @@ function updateJobHistoryUI() {
     });
 }
 
-
-
+// =====================================================
+// Displays a toaster message
+// =====================================================
 function showToast(msg, color = '#fd5321') {
     Toastify({
         text: msg,
