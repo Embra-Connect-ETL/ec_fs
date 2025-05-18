@@ -15,4 +15,4 @@ COPY src/static ./static
 
 EXPOSE 3309
 
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "3309"]
+CMD ["uvicorn", "ec_fs_ui:app", "--host", "0.0.0.0", "--port", "3309"]
