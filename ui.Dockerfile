@@ -10,7 +10,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir fastapi uvicorn
 
 # copy in the static‐server script + your built UI assets
-COPY src/server.py .
+COPY src/ec_fs_ui.py .
 COPY src/static ./static
 
 EXPOSE 3309
