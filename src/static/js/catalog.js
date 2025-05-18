@@ -40,9 +40,9 @@ function loadTablePreview(tableName) {
     }
 
     // Clear the container manually
-    tableContainer.innerHTML = 'Loading...';
+    tableContainer.innerHTML = 'Loading table content...';
 
-    fetch(`http://localhost:8000/catalog/tables/${tableName}/preview?limit=10`)
+    fetch(`http://localhost:8000/catalog/tables/${tableName}/preview?limit=1000`)
         .then(res => res.json())
         .then(data => {
             const { columns, rows } = data;
@@ -108,7 +108,7 @@ function loadTablePreview(tableName) {
             currentGrid.render(tableContainer);
         })
         .catch(err => {
-            tableContainer.textContent = 'Failed to load preview.';
+            tableContainer.textContent = 'Failed to load preview data.';
             console.error(err);
         });
 }

@@ -139,6 +139,7 @@ body {
     color: #686868;
     font-weight: bolder;
     font-size: 1.6rem;
+    pointer-events: none;
 }
 
 .catalog-content h2 ion-icon {
@@ -152,6 +153,7 @@ body {
     padding: 1rem;
     flex-direction: column;
     gap: .8rem;
+    font-weight: bold;
 }
 
 .table-entry {
@@ -160,13 +162,20 @@ body {
     gap: .4rem;
     font-weight: bold;
     color: #686868;
+    border-radius: 24px;
+    padding: .4rem .8rem;
     cursor: pointer;
     transition: .2s all ease;
 }
 
 .table-entry:hover {
+    background: var(--amber-level-4);
+    color: var(--white);
     opacity: .8;
-    transform: translateX(-1px);
+    font-weight: bold;
+    border-radius: 24px;
+    padding: .4rem .8rem;
+    opacity: .8;
 }
 
 #table-list li {

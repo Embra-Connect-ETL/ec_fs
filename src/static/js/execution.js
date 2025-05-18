@@ -535,4 +535,4 @@ function showConfirm(msg) {
 }
 
 initDB();
-document.addEventListener('DOMContentLoaded', () => setTimeout(updateJobHistoryUI, 500));
+document.addEventListener('DOMContentLoaded', () => setTimeout(updateJobHistoryUI, 100));
