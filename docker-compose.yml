@@ -28,31 +28,31 @@ services:
     networks:
       - ec_network
 
-  # ec_fs_ui:
-  #   container_name: ec_fs_ui
-  #   image: embraconnect/ec_fs_ui:latest
-  #   build:
-  #     dockerfile: ui.dockerfile
-  #     context: .
-  #   depends_on:
-  #     - cache
-  #     - ec_fs_api
-  #     - ec_scheduler
-  #     - minio
-  #     - mongo-db
-  #     - spark
-  #   links:
-  #     - "cache"
-  #     - "ec_fs_api"
-  #     - "ec_scheduler"
-  #     - "minio"
-  #     - "mongo-db"
-  #     - "spark"
-  #   restart: always
-  #   ports:
-  #     - "3309:3309"
-  #   networks:
-  #     - ec_network
+  ec_fs_ui:
+    container_name: ec_fs_ui
+    image: embraconnect/ec_fs_ui:latest
+    build:
+      dockerfile: ui.dockerfile
+      context: .
+    depends_on:
+      - cache
+      - ec_fs_api
+      - ec_scheduler
+      - minio
+      - mongo-db
+      - spark
+    links:
+      - "cache"
+      - "ec_fs_api"
+      - "ec_scheduler"
+      - "minio"
+      - "mongo-db"
+      - "spark"
+    restart: always
+    ports:
+      - "3309:3309"
+    networks:
+      - ec_network
 
   ec_scheduler:
     container_name: ec_scheduler
