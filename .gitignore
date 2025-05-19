@@ -117,3 +117,7 @@ cython_debug/
 
 # PyCharm
 idea/
+
+mongo_data/
+redis_data/
+minio_data/

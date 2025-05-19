@@ -6,10 +6,10 @@ services:
       dockerfile: api.dockerfile
       context: .
     environment:
-      - MINIO_ENDPOINT=minio:9000
+      - EC_FS_ENDPOINT=minio:9000
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_BUCKET=${MINIO_BUCKET}
+      - EC_FS_BUCKET=${EC_FS_BUCKET}
     depends_on:
       - cache
       - ec_scheduler
@@ -59,12 +59,16 @@ services:
     image: embraconnect/ec_scheduler:latest
     build: .
     environment:
-      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_BUCKET=${AWS_BUCKET}
-      - BASE_PATH=${BASE_PATH}
-      - WAREHOUSE_DIR=${WAREHOUSE_DIR}
+      - EC_FS_ENDPOINT=${EC_FS_ENDPOINT}
+      - EC_FS_BUCKET=${EC_FS_BUCKET}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - DELTA_LAKE_ENDPOINT=${DELTA_LAKE_ENDPOINT}
+      - DELTA_LAKE_BUCKET=${DELTA_LAKE_BUCKET}
+      - DELTA_LAKE_PATH=${DELTA_LAKE_PATH}
+      - SPARK_WAREHOUSE_DIR=${SPARK_WAREHOUSE_DIR}
+      - SPARK_ENDPOINT=${SPARK_ENDPOINT}
+      - REDIS_HOST=${REDIS_HOST}
     depends_on:
       - cache
       - minio
@@ -92,7 +96,7 @@ services:
     networks:
       - ec_network
     volumes:
-      - ${HOME}/redis_data:/data
+      - ${PWD}/volumes/redis_data:/data
 
   minio:
     image: quay.io/minio/minio:latest
@@ -106,7 +110,7 @@ services:
     networks:
       - ec_network
     volumes:
-      - ${HOME}/minio_data:/data
+      - ${PWD}/volumes/minio_data:/data
     user: "${UID}:${GID}" # Runs as the current user
     command: server /data --console-address ":9001"
     restart: unless-stopped
@@ -125,7 +129,7 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-      - ${HOME}/mongo_data:/data/db
+      - ${PWD}/volumes/mongo_data:/data/db
 
   spark:
     image: "apache/spark:3.5.3-scala2.12-java11-r-ubuntu"
@@ -135,15 +139,22 @@ services:
       /opt/spark/sbin/start-connect-server.sh
       --packages "org.apache.spark:spark-connect_2.12:3.5.3,io.delta:delta-spark_2.12:3.0.0,org.apache.hadoop:hadoop-aws:3.3.4,software.amazon.awssdk:s3:2.20.25,software.amazon.awssdk:sts:2.20.25"
       --conf "spark.driver.extraJavaOptions=-Divy.cache.dir=/tmp -Divy.home=/tmp"
+      --conf "spark.hadoop.fs.s3a.access.key=${MINIO_ROOT_USER}"
+      --conf "spark.hadoop.fs.s3a.secret.key=${MINIO_ROOT_PASSWORD}"
+      --conf "spark.hadoop.fs.s3a.endpoint=${SPARK_WAREHOUSE_ENDPOINT}"
+      --conf "spark.hadoop.fs.s3a.path.style.access=true"
+      --conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem"
+      --conf "spark.hadoop.fs.s3a.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
       --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension"
       --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
     environment:
       - SPARK_NO_DAEMONIZE=true
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+      - SPARK_WAREHOUSE_ENDPOINT=${SPARK_WAREHOUSE_ENDPOINT}
     ports:
-      - "4040:4040" # Spark UI
-      - "15002:15002" # Spark Connect Server port
+      - "4040:4040"     # Spark UI
+      - "15002:15002"   # Spark Connect Server port
     networks:
       - ec_network
 
