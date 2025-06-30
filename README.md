@@ -22,16 +22,25 @@ pip install -r requirements.txt
 #----------------------------------------------
 # File System Access
 #----------------------------------------------
-EC_FS_ENDPOINT=minio:9000
-EC_FS_BUCKET=your-bucket
-MINIO_ROOT_USER=your_user_name
-MINIO_ROOT_PASSWORD=your_password
+
+# If running via Docker
+# EC_FS_ENDPOINT=minio:9000
+EC_FS_ENDPOINT=localhost:9000
+EC_FS_BUCKET=ec-fs
+MINIO_ROOT_USER=ec_root_user
+MINIO_ROOT_PASSWORD=cQ8BE0R+HHz/6pmDISlI7Dk=
 
 #------------------------------------------------------------------------------------------
 # The following credentials can be created via the MinIO console [optional]
 #------------------------------------------------------------------------------------------
 MINIO_ACCESS_KEY=
 MINIO_SECRET_KEY=
+```
+
+
+- Using MinIO as the Object Store backend:
+```sh
+docker compose up minio
 ```
 
 - Run the API:
